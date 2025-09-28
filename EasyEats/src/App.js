@@ -4,17 +4,44 @@ import './App.css';
 function App() {
   const [searchInput, setSearchInput] = useState('');
   const [showNotice, setShowNotice] = useState(false);
+  const [backendMsg, setBackendMsg] = useState('');
+  const [backendDetails, setBackendDetails] = useState([]);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     // Trigger notice
     setShowNotice(true);
-    // Hide after 6 seconds (a few more seconds)
+    // Hide notice after 6 seconds
     setTimeout(() => setShowNotice(false), 6000);
+
+    const text = searchInput;
     // Clear the chatbox
     setSearchInput('');
-    // You can also handle your actual search/submit logic here
-    console.log('Searching for:', searchInput);
+
+    // Call backend
+    try {
+      const resp = await fetch('http://127.0.0.1:5000/api/shop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      const data = await resp.json();
+      const msg = data.summary || data.error || 'Received a response.';
+      setBackendMsg(msg);
+      setBackendDetails(Array.isArray(data.products) ? data.products : []);
+      // Clear after 30 seconds
+      setTimeout(() => {
+        setBackendMsg('');
+        setBackendDetails([]);
+      }, 30000);
+    } catch (err) {
+      setBackendMsg('Failed to reach backend. Is the server running?');
+      setBackendDetails([]);
+      setTimeout(() => {
+        setBackendMsg('');
+        setBackendDetails([]);
+      }, 30000);
+    }
   };
 
   const foodImages = [
@@ -82,6 +109,28 @@ function App() {
             <div className="notice">
               <span className="notice-icon" aria-hidden>✉️</span>
               <span className="notice-text">Please check your email for the recipe/Ingredients list</span>
+            </div>
+          )}
+
+          {backendMsg && (
+            <div className="notice" style={{ marginTop: '10px' }}>
+              <span className="notice-icon" aria-hidden>🛒</span>
+              <span className="notice-text">{backendMsg}</span>
+            </div>
+          )}
+
+          {backendDetails.length > 0 && (
+            <div className="notice notice-list" style={{ marginTop: '8px' }}>
+              <ul>
+                {backendDetails.map((p, idx) => (
+                  <li key={idx}>
+                    {p.ingredient ? (<strong>{p.ingredient}</strong>) : null}
+                    {typeof p.price === 'number' ? ` — $${p.price.toFixed(2)}` : ''}
+                    {p.description ? ` — ${p.description}` : ''}
+                    {p.error ? ` — ${p.error}` : ''}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
