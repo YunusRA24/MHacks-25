@@ -1,0 +1,30 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bunGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D2691E;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="meatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Top bun -->
+  <ellipse cx="60" cy="25" rx="35" ry="12" fill="url(#bunGradient)" stroke="#8B4513" stroke-width="2"/>
+  <!-- Lettuce -->
+  <path d="M25 35 Q35 30 45 35 Q55 30 65 35 Q75 30 85 35 Q95 30 95 35 L95 40 Q85 45 75 40 Q65 45 55 40 Q45 45 35 40 Q25 45 25 40 Z" fill="#90EE90"/>
+  <!-- Tomato -->
+  <ellipse cx="60" cy="50" rx="30" ry="4" fill="#ff0000"/>
+  <!-- Cheese -->
+  <ellipse cx="60" cy="55" rx="30" ry="3" fill="#ffd700"/>
+  <!-- Meat patty -->
+  <ellipse cx="60" cy="65" rx="30" ry="8" fill="url(#meatGradient)" stroke="#654321" stroke-width="1"/>
+  <!-- Bottom bun -->
+  <ellipse cx="60" cy="80" rx="35" ry="12" fill="url(#bunGradient)" stroke="#8B4513" stroke-width="2"/>
+  <!-- Sesame seeds on top bun -->
+  <circle cx="45" cy="20" r="2" fill="#ffff00"/>
+  <circle cx="60" cy="18" r="2" fill="#ffff00"/>
+  <circle cx="75" cy="20" r="2" fill="#ffff00"/>
+  <circle cx="50" cy="25" r="1.5" fill="#ffff00"/>
+  <circle cx="70" cy="25" r="1.5" fill="#ffff00"/>
+</svg>

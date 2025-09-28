@@ -1,0 +1,40 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="saladGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#90EE90;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#228B22;stop-opacity:1" />
+    </radialGradient>
+    <linearGradient id="bowlGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f0f0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d0d0d0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Bowl -->
+  <ellipse cx="60" cy="85" rx="45" ry="15" fill="url(#bowlGradient)" stroke="#c0c0c0" stroke-width="2"/>
+  <!-- Lettuce leaves -->
+  <path d="M30 50 Q40 40 50 50 Q60 40 70 50 Q80 40 90 50 Q80 60 70 50 Q60 60 50 50 Q40 60 30 50" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+  <path d="M35 60 Q45 50 55 60 Q65 50 75 60 Q85 50 85 60 Q75 70 65 60 Q55 70 45 60 Q35 70 35 60" fill="#90EE90" stroke="#228B22" stroke-width="1"/>
+  <!-- Cherry tomatoes -->
+  <circle cx="40" cy="45" r="6" fill="#ff0000"/>
+  <circle cx="70" cy="45" r="6" fill="#ff0000"/>
+  <circle cx="50" cy="60" r="6" fill="#ff0000"/>
+  <circle cx="80" cy="60" r="6" fill="#ff0000"/>
+  <circle cx="60" cy="50" r="5" fill="#ff0000"/>
+  <!-- Cucumber slices -->
+  <ellipse cx="35" cy="55" rx="8" ry="4" fill="#00ff00"/>
+  <ellipse cx="65" cy="55" rx="8" ry="4" fill="#00ff00"/>
+  <ellipse cx="50" cy="70" rx="8" ry="4" fill="#00ff00"/>
+  <!-- Carrot slices -->
+  <ellipse cx="45" cy="45" rx="6" ry="3" fill="#ff8c00"/>
+  <ellipse cx="75" cy="45" rx="6" ry="3" fill="#ff8c00"/>
+  <ellipse cx="60" cy="65" rx="6" ry="3" fill="#ff8c00"/>
+  <!-- Croutons -->
+  <rect x="40" y="40" width="4" height="4" fill="#D2691E" transform="rotate(45 42 42)"/>
+  <rect x="70" y="40" width="4" height="4" fill="#D2691E" transform="rotate(45 72 42)"/>
+  <rect x="55" y="55" width="4" height="4" fill="#D2691E" transform="rotate(45 57 57)"/>
+  <!-- Dressing drops -->
+  <circle cx="30" cy="50" r="2" fill="#ffff00" opacity="0.7"/>
+  <circle cx="50" cy="40" r="2" fill="#ffff00" opacity="0.7"/>
+  <circle cx="70" cy="50" r="2" fill="#ffff00" opacity="0.7"/>
+  <circle cx="60" cy="70" r="2" fill="#ffff00" opacity="0.7"/>
+</svg>

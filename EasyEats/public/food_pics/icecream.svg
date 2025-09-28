@@ -1,0 +1,40 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vanillaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE4E1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5DEB3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="chocolateGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="strawberryGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB6C1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF69B4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Cone -->
+  <path d="M40 80 L60 80 L50 100 Z" fill="#D2691E" stroke="#8B4513" stroke-width="2"/>
+  <!-- Cone pattern -->
+  <path d="M42 85 L48 95" stroke="#8B4513" stroke-width="1"/>
+  <path d="M44 90 L50 100" stroke="#8B4513" stroke-width="1"/>
+  <path d="M46 95 L52 105" stroke="#8B4513" stroke-width="1"/>
+  <path d="M48 100 L54 110" stroke="#8B4513" stroke-width="1"/>
+  <path d="M50 105 L56 115" stroke="#8B4513" stroke-width="1"/>
+  <!-- Vanilla scoop -->
+  <ellipse cx="50" cy="30" rx="18" ry="25" fill="url(#vanillaGradient)" stroke="#F5DEB3" stroke-width="2"/>
+  <!-- Chocolate scoop -->
+  <ellipse cx="50" cy="50" rx="18" ry="25" fill="url(#chocolateGradient)" stroke="#654321" stroke-width="2"/>
+  <!-- Strawberry scoop -->
+  <ellipse cx="50" cy="70" rx="18" ry="25" fill="url(#strawberryGradient)" stroke="#FF69B4" stroke-width="2"/>
+  <!-- Cherry on top -->
+  <circle cx="50" cy="15" r="4" fill="#ff0000"/>
+  <path d="M50 11 Q52 7 54 9" stroke="#228B22" stroke-width="1" fill="none"/>
+  <!-- Sprinkles -->
+  <rect x="35" y="25" width="1" height="4" fill="#FFD700" transform="rotate(45 35.5 27)"/>
+  <rect x="60" y="25" width="1" height="4" fill="#FFD700" transform="rotate(45 60.5 27)"/>
+  <rect x="40" y="45" width="1" height="4" fill="#FFD700" transform="rotate(45 40.5 47)"/>
+  <rect x="55" y="45" width="1" height="4" fill="#FFD700" transform="rotate(45 55.5 47)"/>
+  <rect x="45" y="65" width="1" height="4" fill="#FFD700" transform="rotate(45 45.5 67)"/>
+  <rect x="50" y="65" width="1" height="4" fill="#FFD700" transform="rotate(45 50.5 67)"/>
+</svg>
