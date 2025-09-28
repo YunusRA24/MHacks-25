@@ -51,10 +51,9 @@ function App() {
       {/* Navigation Bar */}
       <nav className="navbar">
         <div className="nav-container">
-          <div className="nav-left">
-            <span className="nav-item">Home</span>
-          </div>
+          <div className="nav-left"><span className="brand-title">EasyEats</span></div>
           <div className="nav-center">
+            <span className="nav-item">Home</span>
             <span className="nav-item">Recipes</span>
             <span className="nav-item">Update Fridge</span>
           </div>

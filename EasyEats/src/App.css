@@ -84,7 +84,7 @@ html, body, #root {
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 15px 20px;
+  padding: 10px 14px; /* tighter to bring brand closer to top-left */
 }
 
 .nav-left,
@@ -94,9 +94,24 @@ html, body, #root {
   align-items: center;
   gap: 30px;
 }
+.brand-title {
+  color: #ffd700; /* gold */
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  text-shadow: none; /* no glow */
+  border: 2px solid #ffd700; /* gold border */
+  border-radius: 10px; /* rounded edges */
+  padding: 6px 12px; /* space inside the rectangle */
+  padding-right: 12px;
+  display: inline-block; /* ensure rectangular box fits text */
+}
+
 
 .nav-center {
-  gap: 40px;
+  gap: 30px; /* equal spacing among Home, Recipes, Update Fridge */
+  margin: 0 auto; /* center the middle group */
 }
 
 .nav-item {
