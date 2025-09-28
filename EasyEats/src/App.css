@@ -1,6 +1,11 @@
+html, body, #root {
+  height: 100%;
+}
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 .App {
   min-height: 100vh;
+  height: 100vh; /* lock to viewport height */
+  overflow: hidden; /* prevent scrolling past background */
   position: relative;
   /* Luxe black base */
   background-color: #0e0f13;
