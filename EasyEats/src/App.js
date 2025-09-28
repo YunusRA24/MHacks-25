@@ -5,20 +5,16 @@ function App() {
   const [searchInput, setSearchInput] = useState('');
   const [showNotice, setShowNotice] = useState(false);
   const [backendMsg, setBackendMsg] = useState('');
-  const [backendDetails, setBackendDetails] = useState([]);
+  const [backendPretty, setBackendPretty] = useState('');
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    // Trigger notice
     setShowNotice(true);
-    // Hide notice after 6 seconds
     setTimeout(() => setShowNotice(false), 6000);
 
     const text = searchInput;
-    // Clear the chatbox
     setSearchInput('');
 
-    // Call backend
     try {
       const resp = await fetch('http://127.0.0.1:5000/api/shop', {
         method: 'POST',
@@ -28,18 +24,17 @@ function App() {
       const data = await resp.json();
       const msg = data.summary || data.error || 'Received a response.';
       setBackendMsg(msg);
-      setBackendDetails(Array.isArray(data.products) ? data.products : []);
-      // Clear after 30 seconds
+      setBackendPretty(typeof data.pretty === 'string' ? data.pretty : '');
       setTimeout(() => {
         setBackendMsg('');
-        setBackendDetails([]);
+        setBackendPretty('');
       }, 30000);
     } catch (err) {
       setBackendMsg('Failed to reach backend. Is the server running?');
-      setBackendDetails([]);
+      setBackendPretty('');
       setTimeout(() => {
         setBackendMsg('');
-        setBackendDetails([]);
+        setBackendPretty('');
       }, 30000);
     }
   };
@@ -119,18 +114,9 @@ function App() {
             </div>
           )}
 
-          {backendDetails.length > 0 && (
-            <div className="notice notice-list" style={{ marginTop: '8px' }}>
-              <ul>
-                {backendDetails.map((p, idx) => (
-                  <li key={idx}>
-                    {p.ingredient ? (<strong>{p.ingredient}</strong>) : null}
-                    {typeof p.price === 'number' ? ` — $${p.price.toFixed(2)}` : ''}
-                    {p.description ? ` — ${p.description}` : ''}
-                    {p.error ? ` — ${p.error}` : ''}
-                  </li>
-                ))}
-              </ul>
+          {backendPretty && (
+            <div className="notice" style={{ marginTop: '8px', whiteSpace: 'pre-wrap', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace' }}>
+              {backendPretty}
             </div>
           )}
         </div>

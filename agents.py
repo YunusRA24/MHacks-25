@@ -1,3 +1,4 @@
+import os
 import requests
 
 # ----------------- Asi1 API call -----------------
@@ -78,6 +79,9 @@ def get_kroger_token():
         return None
 
 
+# Intentionally no link generation — user requested no links in output
+
+
 def get_products_for_ingredients(ingredients, location_id="01400943", budget=None):
     """
     Fetch products from Kroger. If budget is None, do not enforce a cap.
@@ -106,11 +110,10 @@ def get_products_for_ingredients(ingredients, location_id="01400943", budget=Non
                 item_info = product.get("items", [{}])[0] if product.get("items") else {}
                 price_str = item_info.get("price", {}).get("regular")
                 price = float(price_str) if price_str else 0.0
-
                 if enforce and (total_cost + price) > float(budget):
                     results.append({
                         "ingredient": ingredient,
-                        "error": f"Skipping, adding this product exceeds budget (current total: {total_cost})"
+                        "error": f"Skipping, adding this product exceeds budget (current total: {total_cost})",
                     })
                     skipped_count += 1
                 else:
@@ -160,7 +163,7 @@ def process_user_text(raw_text: str):
         budget_value = None
         if isinstance(budget_raw, str):
             if 'unlimited' in budget_raw.lower():
-                budget_value = None  # None means unlimited (no enforcement)
+                budget_value = None  # unlimited
             else:
                 try:
                     budget_value = float(budget_raw)
@@ -169,9 +172,9 @@ def process_user_text(raw_text: str):
         elif isinstance(budget_raw, (int, float)):
             budget_value = float(budget_raw)
         else:
-            budget_value = None  # no budget provided
+            budget_value = None
 
-        # Optionally filter by dietary restrictions
+        # Optional dietary filter
         if dietary:
             allowed = filter_ingredients_by_diet(ingredients_needed, dietary)
         else:
@@ -182,6 +185,28 @@ def process_user_text(raw_text: str):
         budget_text = "Unlimited" if budget_value is None else f"${budget_value:.2f}"
         skipped_text = f", skipped {skipped_count} item(s) due to budget" if enforced and skipped_count else ""
         summary = f"Found {len(products)} items. Est. total: ${total:.2f}. Budget: {budget_text}{skipped_text}."
+
+        # Build pretty, link-free, structured text output
+        lines = []
+        lines.append("Ingredients allowed by dietary restrictions:")
+        lines.append(str(allowed))
+        lines.append("----------")
+        lines.append("Dietary restrictions identified:")
+        lines.append(str(dietary))
+        lines.append("----------")
+        lines.append("Kroger Products:")
+        for p in products:
+            ing = p.get("ingredient", "")
+            if p.get("error"):
+                lines.append(f"{ing}: {p['error']}")
+            else:
+                desc = p.get("description", "")
+                price = p.get("price")
+                price_txt = f"${price:.2f}" if isinstance(price, (int, float)) else "—"
+                lines.append(f"{ing}: {desc} ({price_txt})")
+        lines.append(f"Total cost: ${total:.2f} (Budget: {budget_text})")
+        pretty = "\n".join(lines)
+
         return {
             "summary": summary,
             "ingredients": allowed,
@@ -191,15 +216,125 @@ def process_user_text(raw_text: str):
             "budget_enforced": enforced,
             "skipped": skipped_count,
             "total": total,
+            "pretty": pretty,
         }
     except Exception as e:
         return {"error": f"Failed to parse AI output: {e}", "raw": parsed}
 
 
+# ----------------- AgentMail helpers -----------------
+
+AGENTMAIL_API_KEY = os.environ.get("AGENTMAIL_API_KEY", "")
+AGENTMAIL_API_URL = os.environ.get("AGENTMAIL_API_URL", "https://api.agentmail.to/send")
+AGENTMAIL_FROM = os.environ.get("AGENTMAIL_FROM", "EasyEats@agentmail.to")
+AGENTMAIL_TO = os.environ.get("AGENTMAIL_TO", "EasyEats@agentmail.to")
+
+
+def _build_email_html(result: dict) -> str:
+    dietary = ", ".join(result.get("dietary") or []) or "no specific preference"
+    budget = result.get("budget")
+    budget_text = "Unlimited" if budget is None else f"${budget:.2f}"
+    total = result.get("total", 0.0)
+
+    rows = []
+    for p in result.get("products", []) or []:
+        ing = p.get("ingredient", "")
+        price = p.get("price")
+        price_txt = f"${price:.2f}" if isinstance(price, (int, float)) else "—"
+        desc = p.get("description") or p.get("error", "")
+        link = p.get("link") or ""
+        link_html = f'<a href="{link}">View</a>' if link else ""
+        rows.append(f"<tr><td>{ing}</td><td>{price_txt}</td><td>{desc}</td><td>{link_html}</td></tr>")
+
+    table_html = (
+        "<table border=1 cellpadding=6 cellspacing=0 style=\"border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;font-size:14px\">"
+        "<thead><tr><th>Ingredient</th><th>Price</th><th>Description / Status</th><th>Link</th></tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody></table>"
+    )
+
+    html = (
+        "<div style=\"font-family:Arial,Helvetica,sans-serif;color:#111\">"
+        "<h2>EasyEats — Ingredients & Products</h2>"
+        f"<p><strong>Summary:</strong> {result.get('summary','')}</p>"
+        f"<p><strong>Dietary:</strong> {dietary} &nbsp; | &nbsp; <strong>Budget:</strong> {budget_text} &nbsp; | &nbsp; <strong>Estimated Total:</strong> ${total:.2f}</p>"
+        f"{table_html}"
+        f"<p style=\"margin-top:16px\">This ingredients list is <strong>{dietary}</strong>.</p>"
+        "</div>"
+    )
+    return html
+
+
+def _build_email_text(result: dict) -> str:
+    dietary = ", ".join(result.get("dietary") or []) or "no specific preference"
+    budget = result.get("budget")
+    budget_text = "Unlimited" if budget is None else f"${budget:.2f}"
+    total = result.get("total", 0.0)
+
+    lines = [
+        "EasyEats — Ingredients & Products",
+        f"Summary: {result.get('summary','')}",
+        f"Dietary: {dietary} | Budget: {budget_text} | Estimated Total: ${total:.2f}",
+        "",
+        "Items:",
+    ]
+    for p in result.get("products", []) or []:
+        ing = p.get("ingredient", "")
+        price = p.get("price")
+        price_txt = f"${price:.2f}" if isinstance(price, (int, float)) else "—"
+        desc = p.get("description") or p.get("error", "")
+        link = p.get("link") or ""
+        lines.append(f"- {ing}: {price_txt} — {desc} {('['+link+']') if link else ''}")
+    lines.append("")
+    lines.append(f"This ingredients list is {dietary}.")
+    return "\n".join(lines)
+
+
+def send_agentmail_email(result: dict, subject: str = "EasyEats — Your Grocery List", to: str = None):
+    """Send a detailed email via AgentMail. Uses env AGENTMAIL_API_KEY and URL."""
+    if not AGENTMAIL_API_KEY:
+        print("AGENTMAIL_API_KEY not set; skipping email send.")
+        return {"sent": False, "reason": "missing_api_key"}
+
+    to_addr = to or AGENTMAIL_TO
+    html = _build_email_html(result)
+    text = _build_email_text(result)
+
+    try:
+        headers = {
+            "Authorization": f"Bearer {AGENTMAIL_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "from": AGENTMAIL_FROM,
+            "to": to_addr,
+            "subject": subject,
+            "text": text,
+            "html": html,
+        }
+        resp = requests.post(AGENTMAIL_API_URL, headers=headers, json=payload, timeout=15)
+        ok = resp.status_code < 300
+        if not ok:
+            print("AgentMail send failed:", resp.status_code, resp.text)
+        return {"sent": ok, "status": resp.status_code, "body": resp.text if not ok else ""}
+    except Exception as e:
+        print("AgentMail exception:", e)
+        return {"sent": False, "reason": str(e)}
+
+
 # ----------------- Combined Usage -----------------
 if __name__ == "__main__":
-    example_text = (
-        "Here's a simple chicken alfredo pasta recipe... I already own alfredo pasta, black pepper, salt. "
-        "My dietary preference is lactose intolerant. My budget is 15 dollars."
-    )
-    print(process_user_text(example_text))
+    ingredients = ["hummus", "spinach", "chicken", "almonds"]
+    dietary_restrictions = ["vegan", "gluten-free"]
+
+    # Step 1: Filter ingredients by dietary restrictions
+    allowed_ingredients = filter_ingredients_by_diet(ingredients, dietary_restrictions)
+    print("Ingredients allowed by dietary restrictions:")
+    print(allowed_ingredients)
+    print("----------")
+
+    # Step 2: Fetch products for allowed ingredients
+    products, total, skipped, enforced = get_products_for_ingredients(allowed_ingredients, budget=DEFAULT_BUDGET)
+    print("Kroger Products:")
+    for p in products:
+        print(p)
+    print(f"Total cost: ${total:.2f} (Budget: ${DEFAULT_BUDGET})")
